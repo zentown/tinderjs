@@ -140,6 +140,17 @@ function TinderClient() {
       },
       makeTinderCallback(callback));
   };
+
+  /**
+   * Unmatch with a user.
+   * @param {String} matchID the id of the match
+   * @param {Function} callback the callback to invoke when the request completes
+   */
+  this.unmatch = function(matchId, callback) {
+    tinderDelete('user/matches/' + matchId,
+      null,
+      makeTinderCallback(callback));
+  };
   
   /**
    * Swipes left for a user

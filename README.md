@@ -82,6 +82,13 @@ client.authorize(
 * `user id` is the user's id. This is obtained e.g  via `getRecommendations`
 * `callback` is called when the request completes 
 
+### .unmatch(match id, callback)
+
+  Unmatch with a user.
+  
+* `match id` is the match id
+* `callback` is called when the request completes 
+
 ### .getRecommendations(limit, callback)
 
   Gets nearby users
