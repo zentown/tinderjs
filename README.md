@@ -128,9 +128,9 @@ client.authorize(
 
 * `callback` is called when the request completes 
 
-### .deleteProfile(callback)
+### .deleteAccount(callback)
 
-  Delete *your* user profile
+  Delete *your* user account
 
 * `callback` is called when the request completes 
 
