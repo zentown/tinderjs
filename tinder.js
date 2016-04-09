@@ -315,6 +315,16 @@ function TinderClient() {
       null,
       makeTinderCallback(callback));
   };
+
+  /**
+   * Delete the profile for this user
+   * @param {Function} callback the callback to invoke when the request completes
+   */
+  this.deleteProfile = function(callback) {
+    tinderDelete('profile',
+      null,
+      makeTinderCallback(callback));
+  };
   
   /**
    * Get user by id

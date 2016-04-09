@@ -128,6 +128,12 @@ client.authorize(
 
 * `callback` is called when the request completes 
 
+### .deleteProfile(callback)
+
+  Delete *your* user profile
+
+* `callback` is called when the request completes 
+
 ### .getUser(user id, callback)
 
   Get user information by id
