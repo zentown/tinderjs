@@ -2,6 +2,10 @@
 
   Programmatic access to the Tinder API
   
+#### Contribution ####
+
+tinder-desktop is a project that has a lot of potential if the power of the open-source community is harnessed. Come [join us on on Slack](http://tinderjs.com) and view the [priorities list](https://github.com/tinderjs/tinderjs/wiki/Development-Priorities) to see how you can contribute, it is well appreciated!
+
   
 ## Installation
 
