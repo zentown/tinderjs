@@ -291,7 +291,7 @@ function TinderClient() {
    * @param {Number} ageMin the minimum age to show recommendations
    * @param {Number} ageMax the maximum age to show recommendations
    * @param {Number} gender the gender to show recommentations (0 = Male, 1 = Female, -1 = Both)
-   * @param {Number} distance the distance in km to show recommendations
+   * @param {Number} distance the distance in miles to show recommendations
    * @param {Function} callback the callback to invoke when the request completes
    */
   this.updatePreferences = function(discovery, ageMin, ageMax, gender, distance, callback) {

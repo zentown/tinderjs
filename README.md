@@ -119,7 +119,7 @@ client.authorize(
 * `min age` is the minimum age of incoming recommendations
 * `max age` is the maximum age of incoming recommendations
 * `gender` is the gender of incoming recommendations (0 = Male, 1 = Female, -1 = Both)
-* `distance` is the maximum distance in kilometers of incoming recommendations
+* `distance` is the maximum distance in miles of incoming recommendations
 * `callback` is called when the request completes
 
 ### .getProfile(callback)
