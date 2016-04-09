@@ -139,6 +139,12 @@ client.authorize(
 
 * `callback` is called when the request completes 
 
+### .deleteAccount(callback)
+
+  Delete *your* user account
+
+* `callback` is called when the request completes 
+
 ### .getUser(user id, callback)
 
   Get user information by id
