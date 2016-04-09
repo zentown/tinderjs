@@ -327,6 +327,24 @@ function TinderClient() {
       makeTinderCallback(callback));
   };
   
+  /**
+   * Report a user
+   * 
+   * @param {String} userId the id of the user
+   * @param {Number} causeId one of 4 (inappropriate photos), 1 (spam), or 0 (other)
+   * @param {String} causeText optional reason for report when causeId is 0 (other)
+   * @param {Function} callback the callback to invoke when the request completes
+   */
+  this.report = function(userId, causeId, causeText, callback) {
+    var data = {
+      cause: causeId
+    }
+    if (causeId == 0 && causeText != null) data['text'] = causeText;
+    tinderPost('report/' + userId,
+      data,
+      makeTinderCallback(callback));
+  };
+  
 }
 
 exports.TinderClient = TinderClient;
