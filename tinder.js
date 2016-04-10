@@ -70,6 +70,18 @@ function TinderClient() {
   };
 
   /**
+   * Issues a PUT request to the Tinder API
+   * @param {String} path the relative path
+   * @param {Object} data an object containing extra values
+   * @param {Function} callback the callback to invoke when the request completes
+   */
+  var tinderPut = function(path, data, callback) {
+    var opts = getRequestOptions(path, data);
+    opts.method = 'PUT';
+    request(opts, callback);
+  };
+
+  /**
    * Issues a DELETE request to the tinder API
    * @param {String} path the relative path
    * @param {Object} data an object containing extra values
