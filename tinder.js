@@ -1,9 +1,11 @@
-var TINDER_HOST = "https://api.gotinder.com/";
+var TINDER_HOST = "https://api.gotinder.com/"
+var TINDER_IMAGE_HOST = "https://imageupload.gotinder.com/"
+
 var request = require('request');
 
 /**
  * Constructs a new instance of the TinderClient class
- * 
+ *
  * @constructor
  * @this {TinderClient}
  */
@@ -11,23 +13,23 @@ function TinderClient() {
   var xAuthToken = null;
   this.lastActivity = new Date();
   var _this = this;
-  
+
   /**
    * The current account's user id
    */
   this.userId = null;
-  
+
   /**
-   * Helper for getting the request object 
+   * Helper for getting the request object
    * @param path {String} path the relative URI path
-   * @param data {Object} an object of extra values 
+   * @param data {Object} an object of extra values
    */
   var getRequestOptions = function(path, data) {
     var options = {
       url: TINDER_HOST + path,
       json: data
     };
-    
+
     var headers = {
         'User-Agent'      : 'Tinder Android Version 4.5.5',
         'os_version'      : '23',
@@ -35,13 +37,13 @@ function TinderClient() {
         'app-version'     : '854',
         'Accept-Language' : 'en'
     };
-  
+
     if (xAuthToken) {
         headers['X-Auth-Token'] = xAuthToken;
     }
-    
+
     options.headers = headers;
-    
+
     return options;
   };
 
@@ -65,6 +67,21 @@ function TinderClient() {
    */
   var tinderPost = function(path, data, callback) {
     var opts = getRequestOptions(path, data);
+    opts.method = 'POST';
+    request(opts, callback);
+  };
+
+  /**
+   * Issues a multipart POST request to the Tinder API
+   * @param {String} path the relative path
+   * @param {Object} an object containing the values to post
+   * @param {Function} callback the callback to invoke when the request completes
+   */
+  var tinderMultipartPost = function(path, data, callback) {
+    var opts = getRequestOptions(path, data);
+    opts['url'] = TINDER_IMAGE_HOST + path;
+    opts['formData'] = data;
+    delete opts['json'];
     opts.method = 'POST';
     request(opts, callback);
   };
@@ -95,16 +112,16 @@ function TinderClient() {
 
   /**
    * Helper for transforming the request callback values
-   * @param {Function} callback the callback 
+   * @param {Function} callback the callback
    */
   var makeTinderCallback = function(callback) {
     return function(error, res, body) {
       var data = null;
-      
+
       if (!error) {
         if (typeof body === "string")
         {
-          try 
+          try
           {
             data = JSON.parse(body);
           } catch (err) {
@@ -119,7 +136,7 @@ function TinderClient() {
       if (data && data.status && data.status !== 200) {
         error = data;
       }
-      
+
       if (callback) {
         callback(error, data);
       }
@@ -129,7 +146,7 @@ function TinderClient() {
   /**
    * Authorize this tinder client
    * @param {String} fbToken the Facebook token. This will be obtained when authenticating the user
-   * @param {String} fbId the Facebook user id. 
+   * @param {String} fbId the Facebook user id.
    * @param {Function} callback the callback to invoke when the request completes
    */
   this.authorize = function(fbToken, fbId, callback) {
@@ -144,7 +161,7 @@ function TinderClient() {
         if(body === undefined){
           error = new Error('No token passed back from Tinder')
         }
-        
+
         var body = body || { 'token': null };
         if (!error && body.token) {
           xAuthToken = body.token;
@@ -172,7 +189,7 @@ function TinderClient() {
   this.getAuthToken = function() {
     return xAuthToken;
   };
-  
+
   /**
    * Returns whether this client is authorized
    * @return whether or not this client is authorized
@@ -180,7 +197,7 @@ function TinderClient() {
   this.isAuthorized = function() {
     return xAuthToken != null;
   }
-  
+
   /**
    * Returns the xAuthToken
    * @return xAuthToken
@@ -188,7 +205,7 @@ function TinderClient() {
   this.getAuthToken = function() {
     return xAuthToken || null;
   }
-  
+
   /**
    * Returns client information and globals
    * Globals are used for interacting with tinder api limits
@@ -275,25 +292,25 @@ function TinderClient() {
   this.getUpdates = function(callback) {
     tinderPost('updates',
       {
-        last_activity_date: _this.lastActivity.toISOString() 
+        last_activity_date: _this.lastActivity.toISOString()
       },
       makeTinderCallback(function(err, data){
         if (data && data.last_activity_date) {
           _this.lastActivity = new Date(data.last_activity_date);
         }
-        
+
         if (callback) {
           callback(err, data);
         }
       }));
   };
-  
+
   /**
    * Gets the entire history for the current account (all matches, messages, blocks, etc.)
    * 
    * NOTE: Old messages seem to not be returned after a certain threshold. Not yet
    * sure what exactly that timeout is. The official client seems to get this update
-   * once when the app is installed then cache the results and only rely on the 
+   * once when the app is installed then cache the results and only rely on the
    * incremental updates
    * @param {Function} callback the callback to invoke when the request completes
    */
@@ -304,7 +321,7 @@ function TinderClient() {
       },
       makeTinderCallback(callback));
   };
-  
+
   /**
    * Updates the geographical position for the current account 
    * @param {Number} lon the longitude
@@ -350,7 +367,6 @@ function TinderClient() {
       },
       makeTinderCallback(callback));
   };
-  
 
   /**
    * Delete the current account
@@ -374,6 +390,57 @@ function TinderClient() {
   };
 
   /**
+   * Upload a new picture to the current account
+   * @param {Buffer} file the picture that you want to upload
+   * @param {Function} callback the callback to invoke when the request completes
+   */
+  this.uploadPicture = function(file, callback) {
+    tinderMultipartPost('image?client_photo_id=ProfilePhoto' + new Date().getTime(),
+      {
+        userId: _this.userId,
+        file: file
+      },
+      makeTinderCallback(callback));
+  };
+
+  /**
+   * Post a new picture to the current account from Facebook
+   * @param {String} pictureId is the facebook id of the picture
+   * @param {Float} xdistance_percent is the zoom percentage in x 0 full Zoom 1 no Zoom
+   * @param {Float} ydistance_percent is the zoom percentage in x 0 full Zoom 1 no Zoom
+   * @param {Float} xoffset_percent is the offset from the left corner in percentage
+   * @param {Float} yoffset_percent is the offset from the top corner in percentage
+   * @param {Function} callback the callback to invoke when the request completes
+   */
+  this.uploadFBPicture = function(pictureId, xdistance_percent, ydistance_percent, xoffset_percent, yoffset_percent, callback) {
+    tinderPost('media',
+      {
+        "transmit": "fb",
+        "assets": [{
+          "ydistance_percent": ydistance_percent,
+          "id": id,
+          "xoffset_percent": xoffset_percent,
+          "yoffset_percent": yoffset_percent,
+          "xdistance_percent": xdistance_percent
+        }]
+      },
+      makeTinderCallback(callback));
+  };
+
+  /**
+   * Delete a picture from the current account
+   * @param {String} pictureId the id of the picture
+   * @param {Function} callback the callback to invoke when the request completes
+   */
+  this.deletePicture = function(pictureId, callback) {
+    tinderDelete('media',
+      {
+        assets: [pictureId]
+      },
+      makeTinderCallback(callback));
+  };
+
+  /**
    * Get a share URL for a user
    * 
    * @param {String} userId the id of the user
@@ -384,7 +451,7 @@ function TinderClient() {
       null,
       makeTinderCallback(callback));
   };
-  
+
   /**
    * Report a user
    * 
