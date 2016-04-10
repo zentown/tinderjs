@@ -402,6 +402,44 @@ function TinderClient() {
       makeTinderCallback(callback));
   };
   
+  /**
+   * Create a web username for the current account
+   * 
+   * @param {String} userName the username to request be created
+   * @param {Function} callback the callback to invoke when the request completes
+   */
+  this.createUsername = function(username, callback) {
+    tinderPost('profile/username',
+      {
+        username: username
+      },
+      makeTinderCallback(callback));
+  };
+
+  /**
+   * Change a web username for the current account if it's already been set
+   * 
+   * @param {String} userName the username to request be created
+   * @param {Function} callback the callback to invoke when the request completes
+   */
+  this.changeUsername = function(username, callback) {
+    tinderPut('profile/username',
+      {
+        username: username
+      },
+      makeTinderCallback(callback));
+  };
+
+  /**
+   * Deletes the existing web username for the current account
+   * 
+   * @param {Function} callback the callback to invoke when the request completes
+   */
+  this.deleteUsername = function(callback) {
+    tinderDelete('profile/username',
+      null,
+      makeTinderCallback(callback));
+  };
 }
 
 exports.TinderClient = TinderClient;
