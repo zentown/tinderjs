@@ -348,6 +348,82 @@ function TinderClient() {
   };
 
   /**
+   * Update your gender
+   * @param {Number} gender is your gender (0 = Male, 1 = Female)
+   * @param {Function} callback the callback to invoke when the request completes
+   */
+  this.updateGender = function(gender, callback) {
+    tinderPost('profile',
+      {
+        gender: gender
+      },
+      makeTinderCallback(callback));
+  };
+
+  /**
+   * Update your bio
+   * @param {String} bio is you bio (500 characters max.)
+   * @param {Function} callback the callback to invoke when the request completes
+   */
+  this.updateBio = function(bio, callback) {
+    tinderPost('profile',
+      {
+        bio: bio
+      },
+      makeTinderCallback(callback));
+  };
+
+  /**
+   * Update your job
+   * @param {String} id is the facebook id of the job
+   * @param {Function} callback the callback to invoke when the request completes
+   */
+  this.updateJob = function(id, callback) {
+    tinderPut('profile/job',
+      {
+        "company": {
+          "id": id
+        }
+      },
+      makeTinderCallback(callback));
+  };
+
+  /**
+   * Delete your current job
+   * @param {Function} callback the callback to invoke when the request completes
+   */
+  this.deleteJob = function(callback) {
+    tinderDelete('profile/job',
+      null,
+      makeTinderCallback(callback));
+  };
+
+  /**
+   * Update your school
+   * @param {String} id is the facebook id of the school
+   * @param {Function} callback the callback to invoke when the request completes
+   */
+  this.updateSchool = function(id, callback) {
+    tinderPut('profile/school',
+      {
+        "schools": [{
+          "id": id
+        }]
+      },
+      makeTinderCallback(callback));
+  };
+
+  /**
+   * Delete your current school
+   * @param {Function} callback the callback to invoke when the request completes
+   */
+  this.deleteSchool = function(callback) {
+    tinderDelete('profile/school',
+      null,
+      makeTinderCallback(callback));
+  };
+  
+  /**
    * Updates the preferences for the current account
    * @param {Boolean} discovery whether or not to show user's card
    * @param {Number} ageMin the minimum age to show recommendations

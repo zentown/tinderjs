@@ -170,6 +170,46 @@ client.authorize(
 
   Get *your* user information, plus your preferences
 
+### .updateGender(gender, callback)
+
+  Update *your* gender
+
+* `gender` is your gender  (0 = Male, 1 = Female)
+* `callback` is called when the request completes
+
+### .updateBio(bio, callback)
+
+  Update *your* bio
+
+* `bio` is your bio  (500 characters max.)
+* `callback` is called when the request completes
+
+### .updateJob(id, callback)
+
+  Update *your* current job
+
+* `id` id is the Facebook id of the job
+* `callback` is called when the request completes
+
+### .deleteJob(callback)
+
+  Delete *your* current job
+
+* `callback` is called when the request completes
+
+### .updateSchool(id, callback)
+
+  Update *your* current school
+
+* `id` id is the Facebook id of the school
+* `callback` is called when the request completes
+
+### .deleteSchool(callback)
+
+  Delete *your* current school
+
+* `callback` is called when the request completes
+
 ### .deleteAccount(callback)
 
   Delete the current account
