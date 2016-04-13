@@ -1,7 +1,7 @@
 var TINDER_HOST = "https://api.gotinder.com/"
 var TINDER_IMAGE_HOST = "https://imageupload.gotinder.com/"
 
-var request = require('request');
+var request = require('superagent');
 
 /**
  * Constructs a new instance of the TinderClient class
@@ -20,16 +20,9 @@ function TinderClient() {
   this.userId = null;
 
   /**
-   * Helper for getting the request object
-   * @param path {String} path the relative URI path
-   * @param data {Object} an object of extra values
+   * Helper for getting the request headers
    */
-  var getRequestOptions = function(path, data) {
-    var options = {
-      url: TINDER_HOST + path,
-      json: data
-    };
-
+  var getRequestHeaders = function() {
     var headers = {
         'User-Agent'      : 'Tinder Android Version 4.5.5',
         'os_version'      : '23',
@@ -42,9 +35,7 @@ function TinderClient() {
         headers['X-Auth-Token'] = xAuthToken;
     }
 
-    options.headers = headers;
-
-    return options;
+    return headers;
   };
 
   /**
@@ -54,9 +45,9 @@ function TinderClient() {
    * @param {Function} callback the callback to invoke when the request completes 
    */
   var tinderGet = function(path, data, callback) {
-    var opts = getRequestOptions(path, data);
-    opts.method = 'GET';
-    request(opts, callback);
+    request.get(TINDER_HOST + path)
+      .set(getRequestHeaders())
+      .end(callback)
   };
 
   /**
@@ -66,24 +57,10 @@ function TinderClient() {
    * @param {Function} callback the callback to invoke when the request completes
    */
   var tinderPost = function(path, data, callback) {
-    var opts = getRequestOptions(path, data);
-    opts.method = 'POST';
-    request(opts, callback);
-  };
-
-  /**
-   * Issues a multipart POST request to the Tinder API
-   * @param {String} path the relative path
-   * @param {Object} an object containing the values to post
-   * @param {Function} callback the callback to invoke when the request completes
-   */
-  var tinderMultipartPost = function(path, data, callback) {
-    var opts = getRequestOptions(path, data);
-    opts['url'] = TINDER_IMAGE_HOST + path;
-    opts['formData'] = data;
-    delete opts['json'];
-    opts.method = 'POST';
-    request(opts, callback);
+    request.post(TINDER_HOST + path)
+      .set(getRequestHeaders())
+      .send(data)
+      .end(callback)
   };
 
   /**
@@ -93,9 +70,10 @@ function TinderClient() {
    * @param {Function} callback the callback to invoke when the request completes
    */
   var tinderPut = function(path, data, callback) {
-    var opts = getRequestOptions(path, data);
-    opts.method = 'PUT';
-    request(opts, callback);
+    request.put(TINDER_HOST + path)
+      .set(getRequestHeaders())
+      .send(data)
+      .end(callback)
   };
 
   /**
@@ -105,9 +83,10 @@ function TinderClient() {
    * @param {Function} callback the callback to invoke when the request completes
    */
   var tinderDelete = function(path, data, callback) {
-    var opts = getRequestOptions(path, data);
-    opts.method = 'DELETE';
-    request(opts, callback);
+    request.del(TINDER_HOST + path)
+      .set(getRequestHeaders())
+      .send(data)
+      .end(callback)
   };
 
   /**
@@ -115,21 +94,21 @@ function TinderClient() {
    * @param {Function} callback the callback
    */
   var makeTinderCallback = function(callback) {
-    return function(error, res, body) {
+    return function(error, res) {
       var data = null;
 
       if (!error) {
-        if (typeof body === "string")
+        if (typeof res.body === "string")
         {
           try
           {
-            data = JSON.parse(body);
+            data = JSON.parse(res.body);
           } catch (err) {
-            // todo
+            error = data;
           }
         }
-        else if (typeof body === "object") {
-          data = body;
+        else if (typeof res.body === "object") {
+          data = res.body;
         }
       }
 
@@ -153,28 +132,28 @@ function TinderClient() {
     tinderPost('auth',
       {
         facebook_token: fbToken,
-        // facebook_id: fbId, // doesn't seem like we need the fbId now
+        facebook_id: fbId,
         locale: 'en'
       },
-      function(error, res, body) {
+      function(error, res) {
         // If no body is passed back, return an error
-        if(body === undefined){
+        if(res.body === undefined){
           error = new Error('No token passed back from Tinder')
         }
 
-        var body = body || { 'token': null };
+        var body = res.body || { 'token': null };
         if (!error && body.token) {
           xAuthToken = body.token;
           _this.userId = body.user._id;
           _this.defaults = body;
 
           callback = makeTinderCallback(callback);
-          callback(error, res, body);
+          callback(error, res);
         } else if (body.error){
           error = "Failed to authenticate: " + body.error
-          callback(error, res, body);
+          callback(error, res);
         } else {
-          callback(error, res, body);
+          callback(error, res);
         }
       });
   };
@@ -382,7 +361,7 @@ function TinderClient() {
     tinderPut('profile/job',
       {
         "company": {
-          "id": id
+          id: id
         }
       },
       makeTinderCallback(callback));
@@ -406,8 +385,8 @@ function TinderClient() {
   this.updateSchool = function(id, callback) {
     tinderPut('profile/school',
       {
-        "schools": [{
-          "id": id
+        schools: [{
+          id: id
         }]
       },
       makeTinderCallback(callback));
@@ -471,12 +450,12 @@ function TinderClient() {
    * @param {Function} callback the callback to invoke when the request completes
    */
   this.uploadPicture = function(file, callback) {
-    tinderMultipartPost('image?client_photo_id=ProfilePhoto' + new Date().getTime(),
-      {
-        userId: _this.userId,
-        file: file
-      },
-      makeTinderCallback(callback));
+    request.post(TINDER_IMAGE_HOST + 'image?client_photo_id=ProfilePhoto' + 
+                 new Date().getTime())
+      .set(getRequestHeaders())
+      .field('userId', _this.userId)
+      .attach('file', file)
+      .end(makeTinderCallback(callback))
   };
 
   /**
@@ -491,13 +470,13 @@ function TinderClient() {
   this.uploadFBPicture = function(pictureId, xdistance_percent, ydistance_percent, xoffset_percent, yoffset_percent, callback) {
     tinderPost('media',
       {
-        "transmit": "fb",
-        "assets": [{
-          "ydistance_percent": ydistance_percent,
-          "id": id,
-          "xoffset_percent": xoffset_percent,
-          "yoffset_percent": yoffset_percent,
-          "xdistance_percent": xdistance_percent
+        transmit: "fb",
+        assets: [{
+          ydistance_percent: ydistance_percent,
+          id: id,
+          xoffset_percent: xoffset_percent,
+          yoffset_percent: yoffset_percent,
+          xdistance_percent: xdistance_percent
         }]
       },
       makeTinderCallback(callback));
