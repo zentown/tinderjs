@@ -509,6 +509,33 @@ function TinderClient() {
       makeTinderCallback(callback));
   };
   
+  ///////////// TINDER PLUS /////////////////
+  
+  /**
+   * Update the passport location 
+   * @param {Number} lon the longitude
+   * @param {Number} lat the latitutde
+   * @param {Function} callback the callback to invoke when the request completes
+   */
+  this.updatePassport = function(lat, lon, callback) {
+    tinderPost('/passport/user/travel',
+      {
+        lon: lon,
+        lat: lat
+      },
+      makeTinderCallback(callback));
+  };
+  
+  /**
+   * Reset the passport location 
+   * @param {Function} callback the callback to invoke when the request completes
+   */
+  this.resetPassport = function(callback) {
+    tinderPost('/passport/user/reset',
+      null,
+      makeTinderCallback(callback));
+  };
+  
   /**
    * @deprecated
    * Get authenticated user info
