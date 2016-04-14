@@ -219,6 +219,22 @@ client.authorize(
 
 * `callback` is called when the request completes 
 
+## Tinder plus
+
+### .updatePassport(lat, lon, callback)
+
+  Update the passport position
+
+* `lat` latitude of the position
+* `lon` longitude of the position
+* `callback` is called when the request completes 
+
+### .resetPassport(callback)
+
+  Go back to your local position
+
+* `callback` is called when the request completes 
+
 ## Examples
 
   The following example authorizes a client, gets some nearby profiles, likes all of them, and sends a message to any of the ones that match
