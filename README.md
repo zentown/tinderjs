@@ -47,6 +47,10 @@ client.authorize(
 ### .getAuthToken()
 
   Returns xAuthToken from authenticated user. Will be good if you want to save/cache the info.
+  
+### .setAuthToken(token)
+
+  Set auth token if you have it saved, no need to do fb login every time
 
 ### .getDefaults()
 
