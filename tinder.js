@@ -473,7 +473,7 @@ function TinderClient() {
         transmit: "fb",
         assets: [{
           ydistance_percent: ydistance_percent,
-          id: id,
+          id: pictureId,
           xoffset_percent: xoffset_percent,
           yoffset_percent: yoffset_percent,
           xdistance_percent: xdistance_percent
