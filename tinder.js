@@ -1,5 +1,5 @@
-var TINDER_HOST = "https://api.gotinder.com/"
-var TINDER_IMAGE_HOST = "https://imageupload.gotinder.com/"
+var TINDER_HOST = "https://api.gotinder.com/";
+var TINDER_IMAGE_HOST = "https://imageupload.gotinder.com/";
 
 var request = require('superagent');
 
@@ -47,7 +47,7 @@ function TinderClient() {
   var tinderGet = function(path, data, callback) {
     request.get(TINDER_HOST + path)
       .set(getRequestHeaders())
-      .end(callback)
+      .end(callback);
   };
 
   /**
@@ -60,7 +60,7 @@ function TinderClient() {
     request.post(TINDER_HOST + path)
       .set(getRequestHeaders())
       .send(data)
-      .end(callback)
+      .end(callback);
   };
 
   /**
@@ -73,7 +73,7 @@ function TinderClient() {
     request.put(TINDER_HOST + path)
       .set(getRequestHeaders())
       .send(data)
-      .end(callback)
+      .end(callback);
   };
 
   /**
@@ -86,7 +86,7 @@ function TinderClient() {
     request.del(TINDER_HOST + path)
       .set(getRequestHeaders())
       .send(data)
-      .end(callback)
+      .end(callback);
   };
 
   /**
@@ -138,7 +138,7 @@ function TinderClient() {
       function(error, res) {
         // If no body is passed back, return an error
         if(res.body === undefined){
-          error = new Error('No token passed back from Tinder')
+          throw new Error('No token passed back from Tinder');
         }
 
         var body = res.body || { 'token': null };
@@ -150,8 +150,7 @@ function TinderClient() {
           callback = makeTinderCallback(callback);
           callback(error, res);
         } else if (body.error){
-          error = "Failed to authenticate: " + body.error
-          callback(error, res);
+          throw new Error("Failed to authenticate: " + body.error);
         } else {
           callback(error, res);
         }
@@ -174,8 +173,8 @@ function TinderClient() {
    * @return whether or not this client is authorized
    */
   this.isAuthorized = function() {
-    return xAuthToken != null;
-  }
+    return xAuthToken !== null;
+  };
 
   /**
    * Returns the xAuthToken
@@ -183,7 +182,7 @@ function TinderClient() {
    */
   this.getAuthToken = function() {
     return xAuthToken || null;
-  }
+  };
 
   /**
    * Returns client information and globals
@@ -191,7 +190,7 @@ function TinderClient() {
    */
   this.getDefaults = function() {
     return _this.defaults;
-  }
+  };
   
   /**
    * Gets a list of nearby users
@@ -455,7 +454,7 @@ function TinderClient() {
       .set(getRequestHeaders())
       .field('userId', _this.userId)
       .attach('file', file)
-      .end(makeTinderCallback(callback))
+      .end(makeTinderCallback(callback));
   };
 
   /**
@@ -518,8 +517,8 @@ function TinderClient() {
   this.report = function(userId, causeId, causeText, callback) {
     var data = {
       cause: causeId
-    }
-    if (causeId == 0 && causeText != null) data['text'] = causeText;
+    };
+    if (causeId === 0 && causeText !== null) data.text = causeText;
     tinderPost('report/' + userId,
       data,
       makeTinderCallback(callback));
