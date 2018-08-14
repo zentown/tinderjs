@@ -24,12 +24,18 @@ function TinderClient() {
    */
   var getRequestHeaders = function() {
     var headers = {
-        'User-Agent'      : 'Tinder Android Version 4.5.5',
-        'os_version'      : '23',
-        'platform'        : 'android',
-        'app-version'     : '854',
-        'Accept-Language' : 'en'
-    };
+      'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0',
+      'Referer': 'https://tinder.com/',
+      'Accept-Language': 'es-AR,es;q=0.8,en-US;q=0.5,en;q=0.3',
+      'origin': 'https://tinder.com',
+      'x-supported-image-formats': 'jpeg',
+      'app-version': '1020309',
+      'platform': 'web',
+      'Host': 'api.gotinder.com',
+      'Content-type' : 'application/json',
+      'Accept': 'application/json',
+      'Connection': 'keep-alive'
+  };
 
     if (xAuthToken) {
         headers['X-Auth-Token'] = xAuthToken;
@@ -45,8 +51,12 @@ function TinderClient() {
    * @param {Function} callback the callback to invoke when the request completes 
    */
   var tinderGet = function(path, data, callback) {
+    console.log("test");
     request.get(TINDER_HOST + path)
       .set(getRequestHeaders())
+      .then(res => {
+        alert('yay got ' + JSON.stringify(res.body));
+     })
       .end(callback);
   };
 
@@ -197,12 +207,19 @@ function TinderClient() {
    * @param {Number} limit the maximum number of profiles to fetch
    * @param {Function} callback the callback to invoke when the request completes
    */
+  /*
   this.getRecommendations = function(limit, callback) {
     tinderGet('user/recs', 
       {
         limit: limit
       },
       makeTinderCallback(callback));
+  };
+  */
+  this.getRecommendations = function( callback) {
+    tinderGet('v2/recs/core?locale=es-AR',
+    null,
+    makeTinderCallback(callback));
   };
   
   /**
@@ -320,7 +337,7 @@ function TinderClient() {
    * @param {Function} callback the callback to invoke when the request completes
    */
   this.getAccount = function(callback) {
-    tinderGet('meta',
+    tinderGet('v2/meta',
       null,
       makeTinderCallback(callback));
   };
